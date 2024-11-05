@@ -64,10 +64,7 @@ const App: React.FC = () => {
     fetchProducts();
   }, [page]);
 
-  const handlePageChange = (
-    event: React.ChangeEvent<unknown>,
-    newPage: number
-  ) => {
+  const handlePageChange = (_: React.ChangeEvent<unknown>, newPage: number) => {
     setPage(newPage);
     setHasMore(true);
     setPaginationVisible(false);
