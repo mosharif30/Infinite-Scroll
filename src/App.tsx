@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "./App.css";
+import {
+  Container,
+  Grid,
+  Card,
+  CardMedia,
+  CardContent,
+  Typography,
+  Pagination,
+} from "@mui/material";
 import useInfiniteScroll from "./useInfiniteScroll";
 
 const PRODUCTS_PER_PAGE = 20;
@@ -46,7 +54,10 @@ const App: React.FC = () => {
     fetchProducts();
   }, [page]);
 
-  const handlePageChange = (newPage: number) => {
+  const handlePageChange = (
+    event: React.ChangeEvent<unknown>,
+    newPage: number
+  ) => {
     setPage(newPage);
     setHasMore(true);
     setPaginationVisible(false);
@@ -54,37 +65,55 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="App">
-      <h1>Infinite Scroll Products</h1>
-      <div className="products">
+    <Container>
+      <Typography variant="h3" component="h1" gutterBottom align="center">
+        Infinite Scroll Products
+      </Typography>
+      <Grid container spacing={4} justifyContent="flex-start">
         {products.map((product) => (
-          <div key={product.id} className="product-card">
-            <img
-              src={product.image}
-              alt={product.title}
-              className="product-image"
-            />
-            <div className="product-details">
-              <h2 className="product-title">{product.title}</h2>
-              <p className="product-price">${product.price.toFixed(2)}</p>
-              <p className="product-description">{product.description}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-      {paginationVisible && (
-        <div className="pagination">
-          {[...Array(TOTAL_PAGES).keys()].map((number) => (
-            <button
-              key={number + 1}
-              onClick={() => handlePageChange(number + 1)}
+          <Grid
+            item
+            key={product.id}
+            xs={12}
+            sm={6}
+            md={4}
+            lg={3}
+            display="flex"
+          >
+            <Card
+              sx={{ display: "flex", flexDirection: "column", height: "100%" }}
             >
-              {number + 1}
-            </button>
-          ))}
-        </div>
+              <CardMedia
+                component="img"
+                image={product.image}
+                alt={product.title}
+                sx={{ objectFit: "contain", height: 300 }}
+              />
+              <CardContent sx={{ flexGrow: 1 }}>
+                <Typography variant="h6" component="h2" gutterBottom>
+                  {product.title}
+                </Typography>
+                <Typography variant="body1" color="secondary" gutterBottom>
+                  ${product.price.toFixed(2)}
+                </Typography>
+                <Typography variant="body2" color="textSecondary">
+                  {product.description}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+      {paginationVisible && (
+        <Pagination
+          count={TOTAL_PAGES}
+          page={page}
+          onChange={handlePageChange}
+          color="primary"
+          sx={{ marginTop: 4, display: "flex", justifyContent: "center" }}
+        />
       )}
-    </div>
+    </Container>
   );
 };
 
