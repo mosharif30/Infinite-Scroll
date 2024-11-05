@@ -1,8 +1,9 @@
 import { useEffect } from "react";
+import debounce from "lodash/debounce";
 
 const useInfiniteScroll = (callback: () => void, hasMore: boolean) => {
   useEffect(() => {
-    const handleScroll = () => {
+    const handleScroll = debounce(() => {
       if (
         window.innerHeight + document.documentElement.scrollTop >=
           document.documentElement.offsetHeight - 10 &&
@@ -10,7 +11,7 @@ const useInfiniteScroll = (callback: () => void, hasMore: boolean) => {
       ) {
         callback();
       }
-    };
+    }, 300); // 300 ms debounce time
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);

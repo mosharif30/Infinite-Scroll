@@ -13,12 +13,11 @@ import useInfiniteScroll from "./useInfiniteScroll";
 
 const PRODUCTS_PER_PAGE = 20;
 const TOTAL_PAGES = 10;
-const TOTAL_PRODUCTS = PRODUCTS_PER_PAGE * TOTAL_PAGES;
 
 type Product = {
   id: number;
   title: string;
-  image: string;
+  thumbnail: string;
   price: number;
   description: string;
 };
@@ -27,27 +26,38 @@ const App: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [paginationVisible, setPaginationVisible] = useState<boolean>(false);
 
   useInfiniteScroll(() => {
-    if (hasMore && !paginationVisible) {
+    if (!loading && hasMore && !paginationVisible) {
       setPage((prevPage) => prevPage + 1);
     }
   }, hasMore);
 
   useEffect(() => {
     const fetchProducts = async () => {
+      if (loading) return;
+
+      setLoading(true);
       try {
-        const result = await axios.get<Product[]>(
-          `https://fakestoreapi.com/products?limit=${PRODUCTS_PER_PAGE}&page=${page}`
+        const result = await axios.get(
+          `https://dummyjson.com/products?limit=${PRODUCTS_PER_PAGE}&skip=${
+            (page - 1) * PRODUCTS_PER_PAGE
+          }`
         );
-        setProducts((prevProducts) => [...prevProducts, ...result.data]);
-        if (products.length + result.data.length >= TOTAL_PRODUCTS) {
+        setProducts((prevProducts) => [
+          ...prevProducts,
+          ...result.data.products,
+        ]);
+        if (page >= TOTAL_PAGES) {
           setHasMore(false);
           setPaginationVisible(true);
         }
       } catch (error) {
         console.error("Failed to fetch products:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -85,7 +95,7 @@ const App: React.FC = () => {
             >
               <CardMedia
                 component="img"
-                image={product.image}
+                image={product.thumbnail}
                 alt={product.title}
                 sx={{ objectFit: "contain", height: 300 }}
               />
