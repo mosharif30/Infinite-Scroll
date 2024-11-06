@@ -1,7 +1,6 @@
 // src/pages/ProductDetails.tsx
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import {
   Container,
   Typography,
@@ -13,24 +12,43 @@ import {
   List,
   ListItem,
   Divider,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { Product } from "../types/product";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { getProductById } from "../API/GetProductById";
 
 const ProductDetails: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await axios.get(
-          `https://dummyjson.com/products/${productId}`
-        );
+        const response = await getProductById(productId);
         setProduct(response.data);
-      } catch (error) {
-        console.error("Error fetching product details:", error);
+      } catch (error: unknown) {
+        let errorMessage =
+          "Failed to fetch product details. Please try again later.";
+
+        if (error instanceof Error) {
+          errorMessage = error.message;
+        } else if (
+          typeof error === "object" &&
+          error !== null &&
+          "response" in error
+        ) {
+          const err = error as { response: { data: { message: string } } };
+          if (err.response?.data?.message) {
+            errorMessage = err.response.data.message;
+          }
+        }
+
+        console.error("Error fetching product details:", errorMessage);
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
@@ -38,10 +56,30 @@ const ProductDetails: React.FC = () => {
 
     fetchProduct();
   }, [productId]);
+  const handleCloseSnackbar = () => setError(null);
 
   if (loading) return <LoadingSpinner />;
 
-  if (!product) return <Typography>No product found</Typography>;
+  if (!product)
+    return (
+      <Container>
+        <Snackbar
+          open={!!error}
+          autoHideDuration={6000}
+          onClose={handleCloseSnackbar}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        >
+          <Alert
+            onClose={handleCloseSnackbar}
+            severity="error"
+            sx={{ width: "100%" }}
+          >
+            {error}
+          </Alert>
+        </Snackbar>
+        <Typography> No product found</Typography>
+      </Container>
+    );
 
   return (
     <Container>
