@@ -1,14 +1,11 @@
-// src/App.tsx
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { Container, Typography, Pagination } from "@mui/material";
 import ProductList from "../components/ProductList";
 import useInfiniteScroll from "../hooks/useInfiniteScroll";
 import { Product } from "../types/product";
 import LoadingSpinner from "../components/LoadingSpinner";
-
-const PRODUCTS_PER_PAGE = 20;
-const TOTAL_PAGES = 10;
+import { PRODUCTS_PER_PAGE, TOTAL_PAGES } from "../constants";
+import { GetProductsWithPagination } from "../API/GetProductsWithPagination";
 
 const ProductsPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -26,13 +23,12 @@ const ProductsPage: React.FC = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       if (loading) return;
-
+      const limit = (page - 1) * PRODUCTS_PER_PAGE;
       setLoading(true);
       try {
-        const result = await axios.get(
-          `https://dummyjson.com/products?limit=${PRODUCTS_PER_PAGE}&skip=${
-            (page - 1) * PRODUCTS_PER_PAGE
-          }`
+        const result = await GetProductsWithPagination(
+          PRODUCTS_PER_PAGE,
+          limit
         );
         setProducts((prevProducts) => [
           ...prevProducts,
