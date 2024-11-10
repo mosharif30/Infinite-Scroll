@@ -7,7 +7,7 @@ import Header from "./components/Header";
 const App: React.FC = () => {
   return (
     <Router>
-      <Header /> {/* The header will be displayed on all pages */}
+      <Header /> 
       <Routes>
         <Route path="/" element={<ProductsPage />} />
         <Route path="/product/:productId" element={<ProductDetails />} />

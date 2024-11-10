@@ -1,18 +1,27 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import { Box, IconButton } from "@mui/material";
-import useCategoriesStore from "../store/categoriesStore";
-import { getCategory } from "../API/GetCategory";
+
+// Material UI components
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Menu,
+  MenuItem,
+  Box,
+  IconButton,
+} from "@mui/material";
+
+// Material UI icons
 import MenuIcon from "@mui/icons-material/Menu";
 import HomeIcon from "@mui/icons-material/Home";
 import InfoIcon from "@mui/icons-material/Info";
 import CategoryIcon from "@mui/icons-material/Category";
+
+// Custom modules
+import useCategoriesStore from "../store/categoriesStore";
+import { getCategory } from "../API/GetCategory";
 
 const Header: React.FC = () => {
   const { categories, setCategories } = useCategoriesStore();
